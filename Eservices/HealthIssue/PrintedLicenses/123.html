@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إصدار شهادة صحية</title>
+    <link rel="stylesheet" href="https://baladyservices.website/files/css/bootstrap.min.css">
+    <style>
+        .header-container, .footer-container {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header-image, .footer-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: cover;
+            display: block;
+            cursor: pointer;
+        }
+
+        @supports not (object-fit: cover) {
+            .header-container {
+                background: url('https://i.ibb.co/B2QJ9Wjh/Picsart-25-02-15-21-41-35-339.jpg') center/cover no-repeat;
+                height: 300px;
+            }
+            .footer-container {
+                background: url('https://i.ibb.co/35p6wT0d/Picsart-25-02-15-22-53-28-750.jpg') center/cover no-repeat;
+                height: 200px;
+            }
+            .header-image, .footer-image {
+                display: none;
+            }
+        }
+
+        #profileImage {
+            width: 150px;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .has-float-label span {
+            font-size: 14px;
+        }
+
+        .btn-lg {
+            min-width: 150px;
+            margin: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header-image { max-height: 250px; }
+            .footer-image { max-height: 150px; }
+            .btn-lg { width: 100%; margin: 5px 0; }
+        }
+    </style>
+</head>
+<body class="loged-user bg-grey loaded">
+    <div class="container-fluid p-0">
+        <a href="https://balady.gov.sa/themes/custom/balady_new/logo.svg" target="_blank">
+            <div class="header-container">
+                <img src="https://i.ibb.co/B2QJ9Wjh/Picsart-25-02-15-21-41-35-339.jpg" 
+                     class="header-image" 
+                     alt="رأس الصفحة"
+                     loading="lazy">
+            </div>
+        </a>
+
+        <div class="card p-lg-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h2 style="font-size:24px; font-weight:bold; margin:20px 0">
+                            <input type="text" 
+                                   id="certificateTitle" 
+                                   value="شهادة صحية سنوية"
+                                   style="border:none; background:transparent; text-align:center; font-size:inherit">
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <label for="imageUpload" style="cursor:pointer">
+                            <img id="profileImage" 
+                                 src="https://baladyservices.website/assets/images/custom_pages/63849736-e202-4184-aa5e-a006db801760.jpg"
+                                 alt="صورة شخصية">
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/*" hidden>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <label class="form-group has-float-label">
+                            <input class="form-control" type="text" id="amana">
+                            <span>الامانة</span>
+                        </label>
+                    </div>
+                    <!-- جميع حقول الإدخال الأخرى بنفس النمط -->
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-success btn-lg" onclick="confirmData()">تأكد</button>
+                        <button type="button" class="btn btn-primary btn-lg" onclick="savePage()">حفظ البيانات</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="https://balady.gov.sa/themes/custom/balady_new/logo.svg" target="_blank">
+            <div class="footer-container mt-4">
+                <img src="https://i.ibb.co/35p6wT0d/Picsart-25-02-15-22-53-28-750.jpg" 
+                     class="footer-image" 
+                     alt="ذيل الصفحة"
+                     loading="lazy">
+            </div>
+        </a>
+    </div>
+
+    <script>
+        let confirmedData = {};
+        let fileCounter = localStorage.getItem('fileCounter') || 1;
+
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function confirmData() {
+            const fields = [
+                'amana', 'baladia', 'name', 'idNumber', 'gender', 'nationality',
+                'certificateNumber', 'profession', 'issueDateGregorian', 'issueDateHijri',
+                'expiryDateGregorian', 'expiryDateHijri', 'programType', 'programExpiryDate',
+                'licenseNumber', 'establishmentName', 'establishmentNumber'
+            ];
+
+            fields.forEach(field => {
+                confirmedData[field] = document.getElementById(field).value;
+            });
+
+            confirmedData.profileImage = document.getElementById('profileImage').src;
+            confirmedData.headerImage = document.querySelector('.header-image').src;
+            confirmedData.footerImage = document.querySelector('.footer-image').src;
+            confirmedData.certificateTitle = document.getElementById('certificateTitle').value;
+            alert('تم حفظ البيانات بنجاح!');
+        }
+
+        function savePage() {
+            if (Object.keys(confirmedData).length === 0) {
+                alert('الرجاء الضغط على زر "تأكد" أولاً!');
+                return;
+            }
+
+            const htmlContent = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الشهادة الصحية</title>
+    <link rel="stylesheet" href="https://baladyservices.website/files/css/bootstrap.min.css">
+    <style>
+        #preloader { /*...*/ }
+        .header-container, .footer-container { /*...*/ }
+        #profileImage { /*...*/ }
+    </style>
+</head>
+<body>
+    <!-- محتوى الشهادة -->
+</body>
+</html>
+            `;
+
+            const fileName = `شهادة_صحية_${String(fileCounter).padStart(2, '0')}.html`;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            fileCounter++;
+            localStorage.setItem('fileCounter', fileCounter);
+        }
+
+        function getLabel(key) {
+            const labels = {/*...*/};
+            return labels[key] || '';
+        }
+    </script>
+</body>
+</html>
